@@ -1,8 +1,14 @@
 package com.example.realweather.repository.database;
 
+import com.example.realweather.repository.ForecastDao;
+
 public interface WeatherDatabaseClient {
 
-    default WeatherDao getWeatherDao() {
-        return WeatherDatabaseValueHolder.INSTANCE.getValue().getWeatherDao();
+    default TodayForecastDao getTodayForecastDao() {
+        return WeatherDatabaseValueHolder.INSTANCE.getValue().getTodayForecastDao();
+    }
+
+    default ForecastDao getForecastDao() {
+        return WeatherDatabaseValueHolder.INSTANCE.getValue().getForecastDao();
     }
 }

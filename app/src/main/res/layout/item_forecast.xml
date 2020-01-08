@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <main>
+    <data>
 
         <variable
             name="model"
             type="com.example.realweather.model.Forecast" />
-    </main>
+
+        <variable
+            name="converter"
+            type="com.example.realweather.model.IconConverter" />
+    </data>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,7 +32,7 @@
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline"
-            android:src="@{model.getIcon()}"
+            android:src="@{converter.getIcon(model.weather.description)}"
             android:contentDescription="icon"
             tools:ignore="HardcodedText" />
 
@@ -36,7 +40,7 @@
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{model.getDay()}"
+            android:text="@{model.date.substring(6,9)}"
             android:layout_marginStart="@dimen/list_item_date_start_margin"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
@@ -50,7 +54,7 @@
             android:layout_marginEnd="@dimen/forecast_temperature_space"
             android:fontFamily="sans-serif-light"
             android:textColor="@color/primary_text"
-            android:text="@{model.getHighTemperature()}"
+            android:text="@{String.valueOf(model.main.maxTemp)}"
             android:textSize="@dimen/forecast_text_size"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintRight_toLeftOf="@+id/lowTemp"
@@ -61,7 +65,7 @@
             android:id="@+id/lowTemp"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:text="@{model.getLowTemperature()}"
+            android:text="@{String.valueOf(model.main.minTemp)}"
             android:fontFamily="sans-serif-light"
             android:gravity="end"
             android:textSize="@dimen/forecast_text_size"

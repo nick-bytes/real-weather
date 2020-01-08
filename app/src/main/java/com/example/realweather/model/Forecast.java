@@ -3,15 +3,17 @@ package com.example.realweather.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import com.google.gson.annotations.SerializedName;
+import androidx.room.TypeConverters;
 
 @Entity(tableName = "forecast")
 public class Forecast implements Parcelable {
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
     public static final Parcelable.Creator<Forecast> CREATOR = new Parcelable.Creator<Forecast>() {
         @Override
         public Forecast createFromParcel(Parcel in) {
@@ -23,18 +25,25 @@ public class Forecast implements Parcelable {
             return new Forecast[size];
         }
     };
+	@SerializedName("dt_txt")
+	private String date;
+	@PrimaryKey(autoGenerate = true)
+	private int id;
+	@ColumnInfo
+	@TypeConverters(DataTypeConverter.class)
+	private Main main;
+	@ColumnInfo
+	@TypeConverters(DataTypeConverter.class)
+	private Weather weather;
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-    @SerializedName("weather")
-    private WeatherSummary summary;
-    @SerializedName("main")
-    private Main main;
-    @SerializedName("dt_txt")
-    private String date;
+	public Forecast() {
+	}
 
-    protected Forecast(Parcel in) {
-        // TODO: 1/6/2020
+	protected Forecast(Parcel in) {
+		id = in.readInt();
+		weather = in.readParcelable(Weather.class.getClassLoader());
+		main = in.readParcelable(Main.class.getClassLoader());
+		date = in.readString();
     }
 
     @Override
@@ -42,30 +51,33 @@ public class Forecast implements Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        // TODO: 1/6/2020
-    }
-
-    public int getId() {
+	public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+	public Main getMain() {
+		return main;
+	}
+
+	public Weather getWeather() {
+		return weather;
     }
 
-    public WeatherSummary getWeatherSummary() {
-        return summary;
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setWeather(Weather summary) {
+		this.weather = summary;
     }
 
-    public void setWeatherSummary(WeatherSummary summary) {
-        this.summary = summary;
-    }
-
-    public Main getMain() {
-        return main;
-    }
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(id);
+		dest.writeParcelable(weather, flags);
+		dest.writeParcelable(main, flags);
+		dest.writeString(date);
+	}
 
     public void setMain(Main main) {
         this.main = main;

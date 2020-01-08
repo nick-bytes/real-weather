@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph.xml">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/onboardingFragment">
 
-
-    <navigation
-        android:id="@+id/nav_graph"
-        app:startDestination="@id/dashboardFragment">
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.example.realweather.view.OnboardingFragment"
+        android:label="DetailFragment">
+        <action
+            android:id="@+id/onboardingFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
+    </fragment>
 
         <fragment
             android:id="@+id/dashboardFragment"
             android:name="com.example.realweather.view.DashboardFragment"
             android:label="DashboardFragment">
+            <argument
+                android:name="zip"
+                android:defaultValue="21215"
+                app:argType="integer" />
             <action
                 android:id="@+id/dashboardFragment_to_settingsFragment"
                 app:destination="@id/settingsFragment" />
-
 
         </fragment>
         <fragment
@@ -23,5 +31,4 @@
             android:name="com.example.realweather.view.SettingsFragment"
             android:label="DetailFragment" />
 
-    </navigation>
 </navigation>

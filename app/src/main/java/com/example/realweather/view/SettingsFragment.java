@@ -1,32 +1,19 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.realweather.view;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.example.realweather.R;
-import com.example.realweather.repository.RealWeatherSyncUtil;
-
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
+
+import com.example.realweather.R;
+import com.example.realweather.repository.PreferencesClient;
+import com.example.realweather.viewmodel.SettingsViewModel;
 
 /**
  * The SettingsFragment serves as the display for all of the user's settings. In Sunshine, the
@@ -38,62 +25,63 @@ import androidx.preference.PreferenceScreen;
  * Mountain View, California.
  */
 public class SettingsFragment extends PreferenceFragmentCompat implements
-		SharedPreferences.OnSharedPreferenceChangeListener {
+		SharedPreferences.OnSharedPreferenceChangeListener, PreferencesClient {
+
+	private SettingsViewModel viewModel;
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		viewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
+	}
 
 	@Override
 	public void onCreatePreferences(Bundle bundle, String s) {
-		// Add 'general' preferences, defined in the XML file
 		addPreferencesFromResource(R.xml.pref_general);
-
 		SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
 		PreferenceScreen prefScreen = getPreferenceScreen();
 		int count = prefScreen.getPreferenceCount();
 		for (int i = 0; i < count; i++) {
-			Preference p = prefScreen.getPreference(i);
-			if (!(p instanceof CheckBoxPreference)) {
-				String value = sharedPreferences.getString(p.getKey(), "");
-				setPreferenceSummary(p, value);
+			Preference preference = prefScreen.getPreference(i);
+			if (!(preference instanceof CheckBoxPreference)) {
+				String value = sharedPreferences.getString(preference.getKey(), "");
+				setPreferenceSummary(preference, value);
 			}
 		}
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		Activity activity = getActivity();
+		switch (key) {
+			case "location":
+				viewModel.updateLocationPreference(requireActivity());
+				break;
+			case "units":
+				viewModel.updateUnitPreference(requireActivity());
+				break;
+			default:
+				Preference preference = findPreference(key);
+				if (null != preference && !(preference instanceof CheckBoxPreference)) {
+					setPreferenceSummary(preference, sharedPreferences.getString(key, ""));
+				}
+				break;
+		}
 
-		if (key.equals(getString(R.string.pref_location_key))) {
-			// we've changed the location
-			// Wipe out any potential PlacePicker latlng values so that we can use this text entry.
-			WeatherPreferences.resetLocationCoordinates(activity);
-			RealWeatherSyncUtil.startImmediateSync(activity);
-		} else if (key.equals(getString(R.string.pref_units_key))) {
-			// units have changed. update lists of weather entries accordingly
-//			activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null); // TODO: 1/5/2020  
-		}
-		Preference preference = findPreference(key);
-		if (null != preference) {
-			if (!(preference instanceof CheckBoxPreference)) {
-				setPreferenceSummary(preference, sharedPreferences.getString(key, ""));
-			}
-		}
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		// register the preference change listener
-		getPreferenceScreen().getSharedPreferences()
-				.registerOnSharedPreferenceChangeListener(this);
+		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		// unregister the preference change listener
-		getPreferenceScreen().getSharedPreferences()
-				.unregisterOnSharedPreferenceChangeListener(this);
+		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 
+	// TODO: 1/7/2020 need?
 	private void setPreferenceSummary(Preference preference, Object value) {
 		String stringValue = value.toString();
 

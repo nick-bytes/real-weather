@@ -9,4 +9,6 @@
     <string name="widget_pressure_string">Pressure</string>
     <string name="minTemp">Min</string>
     <string name="nullable">null</string>
+    <string name="start">Start</string>
+    <string name="appName">RealWeather</string>
 </resources>

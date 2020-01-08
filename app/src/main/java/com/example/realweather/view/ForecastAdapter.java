@@ -3,12 +3,14 @@ package com.example.realweather.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.drawable.Icon;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.example.realweather.R;
 import com.example.realweather.databinding.ItemForecastBinding;
 import com.example.realweather.model.Forecast;
+import com.example.realweather.model.IconConverter;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -26,6 +28,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 		}
 
 		void bind(Forecast forecast) {
+			binding.setConverter(new IconConverter());
 			binding.setModel(forecast);
 		}
 	}

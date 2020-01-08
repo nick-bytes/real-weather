@@ -1,13 +1,13 @@
-package com.example.realweather.repository.database;
+package com.example.realweather.repository;
 
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.example.realweather.model.Forecast;
-import com.example.realweather.model.Weather;
 
 import java.util.List;
 
@@ -18,18 +18,12 @@ import java.util.List;
  */
 
 @Dao
-public interface WeatherDao {
+public interface ForecastDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertWeather(Weather weather);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertForecasts(List<Forecast> forecasts);
+    void insertForecast(List<Forecast> forecasts);
 
     @Query("SELECT * FROM forecast")
-    List<Forecast> loadForecasts();
-
-    @Query("SELECT * FROM weather")
-    Weather loadWeather();
+    LiveData<List<Forecast>> loadForecasts();
 
 }

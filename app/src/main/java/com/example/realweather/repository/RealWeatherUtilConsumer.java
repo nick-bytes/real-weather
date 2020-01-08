@@ -40,7 +40,7 @@ public interface RealWeatherUtilConsumer {
         return mapping;
     }
 
-    default double kevlinToCelcius(double temperatureInCelsius) {
+    default double kelvinToCelsius(double temperatureInCelsius) {
         return (temperatureInCelsius * 1.8) + 32; //// TODO: 1/6/2020 wrong
     }
 
@@ -91,7 +91,7 @@ public interface RealWeatherUtilConsumer {
     default int getSmallArtResourceIdForWeatherCondition(int weatherId) {
 
         /*
-         * Based on weather code data for Open Weather Map.
+         * Based on weather code data for Open TodayForecast Map.
          */
         if (weatherId >= 200 && weatherId <= 232) {
             return R.drawable.ic_storm;
@@ -129,7 +129,7 @@ public interface RealWeatherUtilConsumer {
     default int getLargeArtResourceIdForWeatherCondition(int weatherId) {
 
         /*
-         * Based on weather code data for Open Weather Map.
+         * Based on weather code data for Open TodayForecast Map.
          */
         if (weatherId >= 200 && weatherId <= 232) {
             return R.drawable.art_storm;

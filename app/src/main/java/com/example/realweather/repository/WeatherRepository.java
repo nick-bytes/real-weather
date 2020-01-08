@@ -1,32 +1,185 @@
 package com.example.realweather.repository;
 
 import android.content.Context;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
+import com.example.realweather.model.Forecast;
+import com.example.realweather.model.TodayForecast;
 import com.example.realweather.repository.database.WeatherDatabaseClient;
-import com.example.realweather.repository.service.RealWeatherSyncIntentService;
+import com.example.realweather.repository.network.GetWeatherDataConsumer;
 
-public class WeatherRepository implements WeatherDatabaseClient, RealWeatherSyncUtil {
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 
-    public static final WeatherRepository INSTANCE = new WeatherRepository();
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private WeatherRepository() {
-    }
+import static com.example.realweather.BuildConfig.OPEN_WEATHER_MAP_API_KEY;
 
-    public boolean hasBeenOnBoarded(Context context) {
-        return false;
-    }
+public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataConsumer,
+		AsyncExecutor, PreferencesClient {
 
-    public void markAsOnboarded(Context context) {
+	public static final WeatherRepository INSTANCE = new WeatherRepository();
+	private final MutableLiveData<List<Forecast>> forecastLiveData = new MutableLiveData<>();
+	private final MutableLiveData<TodayForecast> todayForecastLiveData = new MutableLiveData<>();
 
-    }
+	private WeatherRepository() {
+	}
 
-//    public static void startImmediateSync(@NonNull final Context context) {
-//        Intent intentToSyncImmediately = new Intent(context, RealWeatherSyncIntentService.class);
-//        context.startService(intentToSyncImmediately);
-//    }
+	private LiveData<List<Forecast>> considerFetchingForecasts(List<Forecast> forecastList, int zip) {
+		return isNullOrEmpty(forecastList) ? fetchForecast(zip) : toLiveData(forecastList);
+	}
+
+	private <T> boolean isNullOrEmpty(List<T> list) {
+		return list == null || list.isEmpty();
+	}
+
+	private Callable<Void> createFetchForecastCallable(int zip) {
+		return () -> {
+			getService().retrieveForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<List<Forecast>>() {
+				@Override
+				public void onFailure(@NonNull Call<List<Forecast>> call, @NonNull Throwable throwable) {
+					forecastLiveData.setValue(null);
+				}
+
+				@Override
+				public void onResponse(@NonNull Call<List<Forecast>> call, @NonNull Response<List<Forecast>> response) {
+					if (response.isSuccessful() && response.body() != null) {
+						List<Forecast> results = response.body();
+						forecastLiveData.setValue(results);
+						executeSingleThreadAsync(createStoreForecastAsyncCallable(results));
+					}
+				}
+			});
+
+			return NOTHING;
+		};
+	}
+
+	private Callable<Void> createFetchWeatherCallable(int zip) {
+		return () -> {
+			getService().retrieveTodayForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<TodayForecast>() {
+				@Override
+				public void onFailure(@NonNull Call<TodayForecast> call, @NonNull Throwable throwable) {
+					todayForecastLiveData.setValue(null);
+				}
+
+				@Override
+				public void onResponse(@NonNull Call<TodayForecast> call, @NonNull Response<TodayForecast> response) {
+					if (response.isSuccessful() && response.body() != null) {
+						TodayForecast result = response.body();
+						todayForecastLiveData.setValue(result);
+						executeSingleThreadAsync(createStoreTodayForecastAsyncCallable(result));
+					}
+				}
+			});
+
+			return NOTHING;
+
+		};
+	}
+
+	private Collection<Callable<Void>> createStoreForecastAsyncCallable(List<Forecast> results) {
+		return Collections.singleton(() -> {
+			getForecastDao().insertForecast(results);
+			return NOTHING;
+		});
+
+	}
+
+	private Collection<Callable<Void>> createStoreTodayForecastAsyncCallable(TodayForecast result) {
+		return Collections.singleton(() -> {
+			getTodayForecastDao().insertTodayForecast(result);
+			return NOTHING;
+		});
+
+	}
+
+	private LiveData<List<Forecast>> fetchForecast(int zip) {
+		getService().retrieveForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<List<Forecast>>() {
+			@Override
+			public void onFailure(@NonNull Call<List<Forecast>> call, @NonNull Throwable throwable) {
+				forecastLiveData.setValue(null);
+			}
+
+			@Override
+			public void onResponse(@NonNull Call<List<Forecast>> call, @NonNull Response<List<Forecast>> response) {
+				if (response.isSuccessful() && response.body() != null) {
+					List<Forecast> results = response.body();
+					forecastLiveData.setValue(results);
+					executeSingleThreadAsync(createStoreForecastAsyncCallable(results));
+				}
+			}
+		});
+
+		return forecastLiveData;
+	}
+
+	private LiveData<TodayForecast> fetchTodayForecast(int zip) {
+		getService().retrieveTodayForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<TodayForecast>() {
+			@Override
+			public void onFailure(@NonNull Call<TodayForecast> call, @NonNull Throwable throwable) {
+				forecastLiveData.setValue(null);
+			}
+
+			@Override
+			public void onResponse(@NonNull Call<TodayForecast> call, @NonNull Response<TodayForecast> response) {
+				if (response.isSuccessful() && response.body() != null) {
+					TodayForecast result = response.body();
+					todayForecastLiveData.setValue(result);
+					executeSingleThreadAsync(createStoreTodayForecastAsyncCallable(result));
+				}
+			}
+		});
+
+		return todayForecastLiveData;
+	}
+
+	public void initializeWeatherData(int zip) {
+		executeAsync(Arrays.asList(createFetchForecastCallable(zip), createFetchWeatherCallable(zip)),
+				Executors.newFixedThreadPool(3));
+	}
+
+	public LiveData<List<Forecast>> loadForecasts(int zip) {
+		return Transformations.switchMap(getForecastDao().loadForecasts(),
+				forecastList -> considerFetchingForecasts(forecastList, zip));
+	}
+
+	public LiveData<TodayForecast> loadTodayForecast(int zip) {
+		return Transformations.switchMap(getTodayForecastDao().loadTodayForecast(), todayForecast -> considerFetchingTodayForecast(todayForecast, zip));
+	}
+
+	private LiveData<TodayForecast> considerFetchingTodayForecast(TodayForecast todayForecast, int zip) {
+		return todayForecast == null ? fetchTodayForecast(zip) : toLiveData(todayForecast);
+	}
+
+	private LiveData<List<Forecast>> toLiveData(List<Forecast> forecastList) {
+		forecastLiveData.setValue(forecastList);
+		return forecastLiveData;
+	}
+
+	private LiveData<TodayForecast> toLiveData(TodayForecast todayForecast) {
+		todayForecastLiveData.setValue(todayForecast);
+		return todayForecastLiveData;
+	}
 
 
+	public void updateLocation(Context context) {
+		resetLocationCoordinates(context);
+		executeAsync(Arrays.asList(createFetchForecastCallable(getUserZipPreference(context)), createFetchWeatherCallable(getUserZipPreference(context))),
+				Executors.newFixedThreadPool(3));
+	}
+
+	public void updateUnitPreference(Context context) {
+		// TODO: 1/7/2020
+	}
 }

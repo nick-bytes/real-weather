@@ -1,6 +1,5 @@
 package com.example.realweather.view;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,14 +14,13 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.realweather.R;
-import com.example.realweather.databinding.OverviewFragmentBinding;
+import com.example.realweather.databinding.OnboardingFragmentBinding;
 import com.example.realweather.viewmodel.OnboardingViewModel;
 
-
-// TODO: 1/6/2020 1. Get zip from edittext
-public class OnboardingFragment extends Fragment {
+public class OnboardingFragment extends Fragment implements OnboardingCallback {
 
     private OnboardingViewModel viewModel;
+    private OnboardingFragmentBinding binding;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -36,15 +34,31 @@ public class OnboardingFragment extends Fragment {
         if (viewModel.hasBeenOnboarded(context)) {
             NavHostFragment.findNavController(this).navigate(R.id.dashboardFragment);
         }
-        viewModel.markAsOnboarded(context);
+    }
+
+    private boolean isValidLength() {
+        return binding.editText.getText().toString().length() == 5;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        OverviewFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.overview_fragment, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.onboarding_fragment, container, false);
+        binding.setCallback(this);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onStartClicked(View view) {
+        Context context = requireContext();
+        if (!isValidLength()) {
+            binding.editText.setError("Please enter a valid zip");
+            return;
+        }
+        int userZip = Integer.valueOf(binding.editText.getText().toString());
+        viewModel.handleOnboarding(context, userZip);
+        NavHostFragment.findNavController(this).navigate(OnboardingFragmentDirections.onboardingFragmentToDashboardFragment(userZip));
     }
 
 
