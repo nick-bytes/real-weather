@@ -40,14 +40,6 @@ public interface RealWeatherUtilConsumer {
         return mapping;
     }
 
-    default double kelvinToCelsius(double temperatureInCelsius) {
-        return (temperatureInCelsius * 1.8) + 32; //// TODO: 1/6/2020 wrong
-    }
-
-    default double kelvinToFarenheit(double temperatureInKelvin) {
-        return (temperatureInKelvin - 273.15) * 1.8 + 32;
-    }
-
     default String formatTemperature(Context context, double temperature) {
 ////        if (!WeatherPreferences.isMetric(context)) {
 ////            temperature = celsiusToFahrenheit(temperature);

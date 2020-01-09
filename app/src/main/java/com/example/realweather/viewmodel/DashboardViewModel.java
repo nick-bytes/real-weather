@@ -11,23 +11,26 @@ import java.util.List;
 
 public class DashboardViewModel extends ViewModel {
 
-	private final int zip;
 	private LiveData<List<Forecast>> forecastList;
+	private LiveData<TodayForecast> todayForecast;
 	private WeatherRepository repository = WeatherRepository.INSTANCE;
 
-	public DashboardViewModel(int zip) {
-		this.zip = zip;
+	public DashboardViewModel() {
+
 	}
 
 	public LiveData<List<Forecast>> getForecast() {
 		if (forecastList == null) {
-			forecastList = repository.loadForecasts(zip);
+			forecastList = repository.getForecast();
 		}
 		return forecastList;
     }
 
 	public LiveData<TodayForecast> getTodayForecast() {
-		return repository.loadTodayForecast(zip);
+		if (todayForecast == null) {
+			todayForecast = repository.getTodayForecast();
+		}
+		return todayForecast;
     }
 
 

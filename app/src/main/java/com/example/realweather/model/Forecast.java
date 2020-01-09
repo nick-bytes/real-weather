@@ -3,12 +3,14 @@ package com.example.realweather.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.SerializedName;
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
+
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 @Entity(tableName = "forecast")
 public class Forecast implements Parcelable {
@@ -34,7 +36,7 @@ public class Forecast implements Parcelable {
 	private Main main;
 	@ColumnInfo
 	@TypeConverters(DataTypeConverter.class)
-	private Weather weather;
+	private List<Weather> weather;
 
 	public Forecast() {
 	}
@@ -59,7 +61,7 @@ public class Forecast implements Parcelable {
 		return main;
 	}
 
-	public Weather getWeather() {
+	public List<Weather> getWeather() {
 		return weather;
     }
 
@@ -67,14 +69,14 @@ public class Forecast implements Parcelable {
 		this.id = id;
 	}
 
-	public void setWeather(Weather summary) {
-		this.weather = summary;
+	public void setWeather(List<Weather> weather) {
+		this.weather = weather;
     }
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(id);
-		dest.writeParcelable(weather, flags);
+		dest.writeList(weather);
 		dest.writeParcelable(main, flags);
 		dest.writeString(date);
 	}

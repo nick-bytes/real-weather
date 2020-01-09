@@ -17,6 +17,6 @@ public class DashboardViewModelFactory implements Factory {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new DashboardViewModel(zip);
+        return null;
     }
 }

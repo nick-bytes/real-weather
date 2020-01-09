@@ -2,6 +2,8 @@
     <string name="app_name">RealWeather</string>
     <string name="pref_location_key">location</string>
     <string name="pref_units_key">units</string>
+    <string name="pref_zip_key">pref_zip_key</string>
+    <string name="pref_onboarded_key">pref_onboarded_key</string>
     <string name="settings">Settings</string>
 
     <string name="widget_humidity_text">Humidity</string>
@@ -11,4 +13,6 @@
     <string name="nullable">null</string>
     <string name="start">Start</string>
     <string name="appName">RealWeather</string>
+    <string name="checkYourNetworkConnection">Please check your network connection</string>
+    <string name="weatherIcon">Weather Icon</string>
 </resources>

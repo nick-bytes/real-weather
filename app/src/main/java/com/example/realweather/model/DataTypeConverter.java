@@ -18,17 +18,32 @@ public class DataTypeConverter {
     }
 
     @TypeConverter
+    public static String weatherListToString(List<Weather> weatherList) {
+        return GSON.toJson(weatherList);
+    }
+
+    @TypeConverter
     public static String weatherToString(Weather weather) {
         return GSON.toJson(weather);
     }
 
     @TypeConverter
-    public static List<Forecast> stringToIngredientList(String data) {
+    public static List<Forecast> stringToForecastList(String data) {
         if (data == null) {
             return Collections.emptyList();
         }
 
         return GSON.fromJson(data, new TypeToken<List<Forecast>>() {
+        }.getType());
+    }
+
+    @TypeConverter
+    public static List<Weather> stringToWeatherList(String data) {
+        if (data == null) {
+            return Collections.emptyList();
+        }
+
+        return GSON.fromJson(data, new TypeToken<List<Weather>>() {
         }.getType());
     }
 

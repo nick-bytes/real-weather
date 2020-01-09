@@ -1,4 +1,4 @@
-package com.example.realweather.repository.network;
+package com.example.realweather.model;
 
 import com.example.realweather.model.Forecast;
 

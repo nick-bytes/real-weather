@@ -1,22 +1,21 @@
 package com.example.realweather.repository;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
+import com.example.realweather.R;
 import com.example.realweather.model.UnitType;
 
 import static com.example.realweather.repository.Constants.NO_LATITUDE;
 import static com.example.realweather.repository.Constants.NO_LONGITUDE;
 import static com.example.realweather.repository.Constants.NO_PLACE;
-import static com.example.realweather.repository.Constants.ONBOARDED_PREFERENCE_KEY;
-import static com.example.realweather.repository.Constants.PREFERENCES_UNITS_IMPERIAL;
 import static com.example.realweather.repository.Constants.PREFERENCES_UNITS_KEY;
 
 public interface PreferencesClient {
 
-	String PREFERENCES_ZIP_KEY = "PREFERENCES_ZIP_KEY";
 
 	default String[] getSelectedPosition(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -27,18 +26,18 @@ public interface PreferencesClient {
         return values;
     }
 
-	default String getUnitUserPreference(Context context) {
+	default boolean getUnitUserPreference(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getString(PREFERENCES_UNITS_KEY, PREFERENCES_UNITS_IMPERIAL);
+				.getBoolean(context.getString(R.string.pref_units_key), false);
 	}
 
 	default int getUserZipPreference(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getInt(PREFERENCES_ZIP_KEY, 21215);
+		return Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context)
+				.getString(context.getString(R.string.pref_zip_key), "21215"));
 	}
 
 	default boolean hasBeenOnboarded(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ONBOARDED_PREFERENCE_KEY, false);
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_onboarded_key), false);
 	}
 
 	default boolean isMetric(Context context) {
@@ -46,7 +45,7 @@ public interface PreferencesClient {
     }
 
 	default void markAsOnboarded(Context context) {
-		PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(ONBOARDED_PREFERENCE_KEY, true).apply();
+		PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(context.getString(R.string.pref_onboarded_key), true).apply();
 	}
 
 	default void resetLocationCoordinates(Context context) {
@@ -61,11 +60,12 @@ public interface PreferencesClient {
 
 	}
 
-	default void saveUserZip(Context context, int zip) {
+	@SuppressLint("ApplySharedPref")
+	default void saveUserZip(Context context, String zip) {
 		PreferenceManager.getDefaultSharedPreferences(context)
 				.edit()
-				.putInt(PREFERENCES_ZIP_KEY, zip)
-				.apply();
+				.putString(context.getString(R.string.pref_zip_key), zip)
+				.commit();
 
 	}
 }

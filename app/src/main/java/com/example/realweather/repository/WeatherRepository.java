@@ -8,7 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.example.realweather.model.Forecast;
+import com.example.realweather.model.ForecastResponse;
 import com.example.realweather.model.TodayForecast;
+import com.example.realweather.model.TodayForecastResponse;
 import com.example.realweather.repository.database.WeatherDatabaseClient;
 import com.example.realweather.repository.network.GetWeatherDataConsumer;
 
@@ -45,17 +47,16 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 
 	private Callable<Void> createFetchForecastCallable(int zip) {
 		return () -> {
-			getService().retrieveForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<List<Forecast>>() {
+			getService().retrieveForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<ForecastResponse>() {
 				@Override
-				public void onFailure(@NonNull Call<List<Forecast>> call, @NonNull Throwable throwable) {
+				public void onFailure(@NonNull Call<ForecastResponse> call, @NonNull Throwable throwable) {
 					forecastLiveData.setValue(null);
 				}
 
 				@Override
-				public void onResponse(@NonNull Call<List<Forecast>> call, @NonNull Response<List<Forecast>> response) {
+				public void onResponse(@NonNull Call<ForecastResponse> call, @NonNull Response<ForecastResponse> response) {
 					if (response.isSuccessful() && response.body() != null) {
-						List<Forecast> results = response.body();
-						forecastLiveData.setValue(results);
+						List<Forecast> results = response.body().getList();
 						executeSingleThreadAsync(createStoreForecastAsyncCallable(results));
 					}
 				}
@@ -67,17 +68,16 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 
 	private Callable<Void> createFetchWeatherCallable(int zip) {
 		return () -> {
-			getService().retrieveTodayForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<TodayForecast>() {
+			getService().retrieveTodayForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<TodayForecastResponse>() {
 				@Override
-				public void onFailure(@NonNull Call<TodayForecast> call, @NonNull Throwable throwable) {
+				public void onFailure(@NonNull Call<TodayForecastResponse> call, @NonNull Throwable throwable) {
 					todayForecastLiveData.setValue(null);
 				}
 
 				@Override
-				public void onResponse(@NonNull Call<TodayForecast> call, @NonNull Response<TodayForecast> response) {
+				public void onResponse(@NonNull Call<TodayForecastResponse> call, @NonNull Response<TodayForecastResponse> response) {
 					if (response.isSuccessful() && response.body() != null) {
-						TodayForecast result = response.body();
-						todayForecastLiveData.setValue(result);
+						TodayForecast result = transformResponse(response.body());
 						executeSingleThreadAsync(createStoreTodayForecastAsyncCallable(result));
 					}
 				}
@@ -105,17 +105,16 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 	}
 
 	private LiveData<List<Forecast>> fetchForecast(int zip) {
-		getService().retrieveForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<List<Forecast>>() {
+		getService().retrieveForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<ForecastResponse>() {
 			@Override
-			public void onFailure(@NonNull Call<List<Forecast>> call, @NonNull Throwable throwable) {
+			public void onFailure(@NonNull Call<ForecastResponse> call, @NonNull Throwable throwable) {
 				forecastLiveData.setValue(null);
 			}
 
 			@Override
-			public void onResponse(@NonNull Call<List<Forecast>> call, @NonNull Response<List<Forecast>> response) {
+			public void onResponse(@NonNull Call<ForecastResponse> call, @NonNull Response<ForecastResponse> response) {
 				if (response.isSuccessful() && response.body() != null) {
-					List<Forecast> results = response.body();
-					forecastLiveData.setValue(results);
+					List<Forecast> results = response.body().getList();
 					executeSingleThreadAsync(createStoreForecastAsyncCallable(results));
 				}
 			}
@@ -125,23 +124,30 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 	}
 
 	private LiveData<TodayForecast> fetchTodayForecast(int zip) {
-		getService().retrieveTodayForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<TodayForecast>() {
+		getService().retrieveTodayForecast(zip, OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<TodayForecastResponse>() {
 			@Override
-			public void onFailure(@NonNull Call<TodayForecast> call, @NonNull Throwable throwable) {
+			public void onFailure(@NonNull Call<TodayForecastResponse> call, @NonNull Throwable throwable) {
 				forecastLiveData.setValue(null);
 			}
 
 			@Override
-			public void onResponse(@NonNull Call<TodayForecast> call, @NonNull Response<TodayForecast> response) {
+			public void onResponse(@NonNull Call<TodayForecastResponse> call, @NonNull Response<TodayForecastResponse> response) {
 				if (response.isSuccessful() && response.body() != null) {
-					TodayForecast result = response.body();
-					todayForecastLiveData.setValue(result);
+					TodayForecast result = transformResponse(response.body());
 					executeSingleThreadAsync(createStoreTodayForecastAsyncCallable(result));
 				}
 			}
 		});
 
 		return todayForecastLiveData;
+	}
+
+	private TodayForecast transformResponse(TodayForecastResponse response) {
+		TodayForecast todayForecast = new TodayForecast();
+		todayForecast.setCity(response.getName());
+		todayForecast.setWeather(response.getWeather().get(0));
+		todayForecast.setMain(response.getMain());
+		return todayForecast;
 	}
 
 	public void initializeWeatherData(int zip) {
@@ -153,6 +159,16 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 		return Transformations.switchMap(getForecastDao().loadForecasts(),
 				forecastList -> considerFetchingForecasts(forecastList, zip));
 	}
+
+	public LiveData<List<Forecast>> getForecast() {
+		return getForecastDao().loadForecasts();
+	}
+
+
+	public LiveData<TodayForecast> getTodayForecast() {
+		return getTodayForecastDao().loadTodayForecast();
+	}
+
 
 	public LiveData<TodayForecast> loadTodayForecast(int zip) {
 		return Transformations.switchMap(getTodayForecastDao().loadTodayForecast(), todayForecast -> considerFetchingTodayForecast(todayForecast, zip));

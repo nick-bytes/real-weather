@@ -11,7 +11,7 @@
 
         <variable
             name="converter"
-            type="com.example.realweather.model.IconConverter" />
+            type="com.example.realweather.model.DisplayValueConverter" />
     </data>
 
 
@@ -32,7 +32,7 @@
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline"
-            android:src="@{converter.getIcon(model.weather.description)}"
+            android:src="@{converter.getIcon(model.weather.get(0).description)}"
             android:contentDescription="icon"
             tools:ignore="HardcodedText" />
 
@@ -40,7 +40,7 @@
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{model.date.substring(6,9)}"
+            android:text="@{model.date.substring(6,10)}"
             android:layout_marginStart="@dimen/list_item_date_start_margin"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
@@ -54,7 +54,7 @@
             android:layout_marginEnd="@dimen/forecast_temperature_space"
             android:fontFamily="sans-serif-light"
             android:textColor="@color/primary_text"
-            android:text="@{String.valueOf(model.main.maxTemp)}"
+            android:text="@{String.valueOf(converter.formatTemperature(model.main.maxTemp))}"
             android:textSize="@dimen/forecast_text_size"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintRight_toLeftOf="@+id/lowTemp"
@@ -65,7 +65,7 @@
             android:id="@+id/lowTemp"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(model.main.minTemp)}"
+            android:text="@{String.valueOf(converter.formatTemperature(model.main.minTemp))}"
             android:fontFamily="sans-serif-light"
             android:gravity="end"
             android:textSize="@dimen/forecast_text_size"

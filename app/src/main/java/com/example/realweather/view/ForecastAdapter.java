@@ -1,48 +1,41 @@
 package com.example.realweather.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.graphics.drawable.Icon;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
-import com.example.realweather.R;
-import com.example.realweather.databinding.ItemForecastBinding;
-import com.example.realweather.model.Forecast;
-import com.example.realweather.model.IconConverter;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.realweather.R;
+import com.example.realweather.databinding.ItemForecastBinding;
+import com.example.realweather.model.DisplayValueConverter;
+import com.example.realweather.model.Forecast;
+
+import java.util.List;
+
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
 
-	class ForecastAdapterViewHolder extends RecyclerView.ViewHolder {
+	private List<Forecast> list;
+	private boolean metricPreference;
 
-		final ItemForecastBinding binding;
-
-		ForecastAdapterViewHolder(ItemForecastBinding binding) {
-			super(binding.getRoot());
-			this.binding = binding;
-		}
-
-		void bind(Forecast forecast) {
-			binding.setConverter(new IconConverter());
-			binding.setModel(forecast);
-		}
+	public ForecastAdapter(boolean metricPreference) {
+		this.metricPreference = metricPreference;
 	}
-
-	private final List<Forecast> list = new ArrayList<>();
 
 	@Override
 	public int getItemCount() {
-		return list.size();
+		return list == null ? 0 : list.size();
 	}
 
 	@Override
 	public void onBindViewHolder(@NonNull ForecastAdapterViewHolder holder, int position) {
 		holder.bind(list.get(position));
+	}
+
+	void setList(List<Forecast> newList) {
+		list = newList;
+		notifyDataSetChanged();
 	}
 
 	@NonNull
@@ -54,9 +47,18 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 		return new ForecastAdapterViewHolder(binding);
 	}
 
-	void setList(List<Forecast> newList) {
-		list.clear();
-		list.addAll(newList);
-		notifyDataSetChanged();
+	class ForecastAdapterViewHolder extends RecyclerView.ViewHolder {
+
+		final ItemForecastBinding binding;
+
+		ForecastAdapterViewHolder(ItemForecastBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
+		}
+
+		void bind(Forecast forecast) {
+			binding.setConverter(new DisplayValueConverter(metricPreference));
+			binding.setModel(forecast);
+		}
 	}
 }

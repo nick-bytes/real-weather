@@ -4,7 +4,10 @@ import android.util.ArrayMap;
 
 import com.example.realweather.R;
 
-public class IconConverter {
+public class DisplayValueConverter {
+
+	private static final ArrayMap<String, Integer> ICON_MAPPING = createMapping();
+	private boolean metricPreference;
 
 	static ArrayMap<String, Integer> createMapping() {
 		ArrayMap<String, Integer> mapping = new ArrayMap<>();
@@ -18,13 +21,28 @@ public class IconConverter {
 
 		return mapping;
 	}
-	ArrayMap<String, Integer> ICON_MAPPING = createMapping();
+
+	public DisplayValueConverter(boolean metricPreference) {
+		this.metricPreference = metricPreference;
+	}
 
 	public int getIcon(String weatherDescription) {
 		for (String key : ICON_MAPPING.keySet()) {
 			if (key.contains(weatherDescription)) return ICON_MAPPING.get(key);
 		}
 		return R.drawable.example_appwidget_preview;
+	}
+
+	public int formatTemperature(double temperatureInKelvin) {
+		return metricPreference ? kelvinToCelsius(temperatureInKelvin) : kelvinToFarenheit(temperatureInKelvin);
+	}
+
+	private int kelvinToCelsius(double temperatureInKelvin) {
+		return (int) Math.round(temperatureInKelvin - 273.15);
+	}
+
+	private int kelvinToFarenheit(double temperatureInKelvin) {
+		return (int) Math.round((temperatureInKelvin - 273.15) * 1.8 + 32);
 	}
 
 }

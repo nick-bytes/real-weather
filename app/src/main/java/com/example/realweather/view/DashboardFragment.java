@@ -2,10 +2,13 @@ package com.example.realweather.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -15,25 +18,47 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.realweather.R;
 import com.example.realweather.databinding.DashboardFragmentBinding;
+import com.example.realweather.model.DisplayValueConverter;
+import com.example.realweather.repository.PreferencesClient;
 import com.example.realweather.viewmodel.DashboardViewModel;
-import com.example.realweather.viewmodel.DashboardViewModelFactory;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements PreferencesClient {
 
-    private final ForecastAdapter forecastAdapter = new ForecastAdapter();
     private DashboardViewModel viewModel;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                requireActivity().finish();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        DashboardFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.dashboard_fragment, container, false);
+        DashboardFragmentBinding binding = DataBindingUtil.inflate(inflater,
+                R.layout.dashboard_fragment, container, false);
+        ForecastAdapter forecastAdapter = new ForecastAdapter(getUnitUserPreference(requireContext()));
         binding.forecastRecyclerView.setAdapter(forecastAdapter);
         binding.forecastRecyclerView.setHasFixedSize(true);
         requireActivity().setTitle(R.string.appName);
         setupViewModel();
         viewModel.getForecast().observe(this, forecastAdapter::setList);
-        viewModel.getTodayForecast().observe(this, binding::setModel);
+        viewModel.getTodayForecast().observe(this, forecast -> {
+            if (forecast == null) return;
+            binding.setModel(forecast);
+            binding.setConverter(new DisplayValueConverter(getUnitUserPreference(requireContext())));
+        });
+        setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
@@ -47,11 +72,13 @@ public class DashboardFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        viewModel = ViewModelProviders.of(this, new DashboardViewModelFactory(getZipArgs())).get(DashboardViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(DashboardViewModel.class);
     }
 
-    private int getZipArgs() {
-        return DashboardFragmentArgs.fromBundle(requireArguments()).getZip();
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
     }
+
 
 }

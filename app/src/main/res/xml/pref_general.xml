@@ -15,28 +15,20 @@
      limitations under the License.
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-<!--    <EditTextPreference-->
-<!--        android:defaultValue="@string/pref_location_default"-->
-<!--        android:inputType="text"-->
-<!--        android:key="@string/pref_location_key"-->
-<!--        android:singleLine="true"-->
-<!--        android:title="@string/pref_location_label" />-->
+    <EditTextPreference
+        android:inputType="number"
+        android:key="@string/pref_zip_key"
+        android:singleLine="true"
+        android:summary="ZIP"
+        android:title="Change location" />
 
-<!--    <ListPreference-->
-<!--        android:defaultValue="@string/pref_units_metric"-->
-<!--        android:entries="@array/pref_units_options"-->
-<!--        android:entryValues="@array/pref_units_values"-->
-<!--        android:key="@string/pref_units_key"-->
-<!--        android:title="@string/pref_units_label" />-->
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="@string/pref_units_key"
+        android:title="Metric Units (Temperature)" />
 
-<!--    <CheckBoxPreference-->
-<!--        android:defaultValue="@bool/show_notifications_by_default"-->
-<!--        android:key="@string/pref_enable_notifications_key"-->
-<!--        android:summaryOff="@string/pref_enable_notifications_false"-->
-<!--        android:summaryOn="@string/pref_enable_notifications_true"-->
-<!--        android:title="@string/pref_enable_notifications_label" />-->
 
 </PreferenceScreen>

@@ -16,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.realweather.R;
 import com.example.realweather.databinding.OnboardingFragmentBinding;
 import com.example.realweather.viewmodel.OnboardingViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 public class OnboardingFragment extends Fragment implements OnboardingCallback {
 
@@ -52,13 +53,17 @@ public class OnboardingFragment extends Fragment implements OnboardingCallback {
     @Override
     public void onStartClicked(View view) {
         Context context = requireContext();
+        if (!viewModel.isNetworkConnected(context)) {
+            Snackbar.make(view, R.string.checkYourNetworkConnection, Snackbar.LENGTH_LONG).show();
+            return;
+        }
         if (!isValidLength()) {
             binding.editText.setError("Please enter a valid zip");
             return;
         }
-        int userZip = Integer.valueOf(binding.editText.getText().toString());
-        viewModel.handleOnboarding(context, userZip);
-        NavHostFragment.findNavController(this).navigate(OnboardingFragmentDirections.onboardingFragmentToDashboardFragment(userZip));
+
+        viewModel.handleOnboarding(context, binding.editText.getText().toString());
+        NavHostFragment.findNavController(this).navigate(R.id.dashboardFragment);
     }
 
 
