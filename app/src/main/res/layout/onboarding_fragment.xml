@@ -20,7 +20,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to RealWeather!"
+            android:text="@string/welcome_to_realweather"
             android:maxLines="2"
             android:textSize="13sp" />
 
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
-            android:text="Please enter your zip"
+            android:text="@string/please_enter_your_zip"
             android:textSize="13sp" />
 
         <ImageView
@@ -41,32 +41,36 @@
             android:maxLines="2"
             android:textSize="13sp"
             android:src="@drawable/ic_clear"
-            android:contentDescription="Weather Icon" />
+            android:contentDescription="@string/weather_icon" />
 
         <EditText
             android:id="@+id/editText"
+            android:autofillHints="@string/enter_zip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:hint="@string/enter_zip"
             android:maxLength="5"
             android:textSize="13sp"
-            android:autofillHints=""
-            android:inputType="number" />
+            android:inputType="number"
+            android:nextFocusForward="@id/button" />
 
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:ellipsize="end"-->
-<!--            android:maxLines="2"-->
-<!--            android:text="OR"-->
-<!--            android:textSize="13sp" />-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="@string/or"
+            android:textSize="13sp" />
 
 
         <Button
+            android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/start"
-            android:onClick="@{callback.onStartClicked}"/>
+            android:onClick="@{callback.onEnableLocationClicked}"
+            android:text="@string/enableLocation"
+            android:textAllCaps="true" />
 
     </LinearLayout>
 </layout>

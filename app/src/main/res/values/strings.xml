@@ -11,10 +11,18 @@
     <string name="widget_pressure_string">Pressure</string>
     <string name="minTemp">Min</string>
     <string name="nullable">null</string>
-    <string name="start">Start</string>
+    <string name="enableLocation">Enable Location</string>
     <string name="appName">RealWeather</string>
     <string name="checkYourNetworkConnection">Please check your network connection</string>
+    <string name="failedGettingLocation">Failed getting location</string>
     <string name="weatherIcon">Weather Icon</string>
+    <string name="forecastText">%s \u0040 %s</string>
+
 
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="weather_icon">Weather Icon</string>
+    <string name="please_enter_your_zip">Please enter your zip</string>
+    <string name="welcome_to_realweather">Welcome to RealWeather!</string>
+    <string name="or">OR</string>
+    <string name="enter_zip">Enter zip</string>
 </resources>

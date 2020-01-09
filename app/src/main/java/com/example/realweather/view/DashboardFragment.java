@@ -51,7 +51,6 @@ public class DashboardFragment extends Fragment implements PreferencesClient {
         ForecastAdapter forecastAdapter = new ForecastAdapter(getUnitUserPreference(requireContext()));
         binding.forecastRecyclerView.setAdapter(forecastAdapter);
         binding.forecastRecyclerView.setHasFixedSize(true);
-        requireActivity().setTitle(R.string.appName);
         setupViewModel();
         viewModel.getForecast().observe(this, forecastAdapter::setList);
         viewModel.getTodayForecast().observe(this, forecast -> {

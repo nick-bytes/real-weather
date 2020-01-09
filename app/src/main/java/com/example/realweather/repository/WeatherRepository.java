@@ -24,9 +24,15 @@ import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 import static com.example.realweather.BuildConfig.OPEN_WEATHER_MAP_API_KEY;
 
+/**
+ * Object that provides weather data
+ *
+ * @author Nick Emerson
+ */
 public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataConsumer,
 		AsyncExecutor, PreferencesClient {
 
@@ -51,6 +57,7 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 				@Override
 				public void onFailure(@NonNull Call<ForecastResponse> call, @NonNull Throwable throwable) {
 					forecastLiveData.setValue(null);
+					Timber.e(throwable);
 				}
 
 				@Override
@@ -72,6 +79,7 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 				@Override
 				public void onFailure(@NonNull Call<TodayForecastResponse> call, @NonNull Throwable throwable) {
 					todayForecastLiveData.setValue(null);
+					Timber.e(throwable);
 				}
 
 				@Override
@@ -111,6 +119,7 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 			@Override
 			public void onFailure(@NonNull Call<ForecastResponse> call, @NonNull Throwable throwable) {
 				forecastLiveData.setValue(null);
+				Timber.e(throwable);
 			}
 
 			@Override
@@ -130,6 +139,7 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 			@Override
 			public void onFailure(@NonNull Call<TodayForecastResponse> call, @NonNull Throwable throwable) {
 				forecastLiveData.setValue(null);
+				Timber.e(throwable);
 			}
 
 			@Override

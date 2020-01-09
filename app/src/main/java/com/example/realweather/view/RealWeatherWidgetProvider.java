@@ -16,7 +16,6 @@ import com.example.realweather.model.DisplayValueConverter;
 import com.example.realweather.model.TodayForecast;
 import com.example.realweather.repository.AsyncExecutor;
 import com.example.realweather.repository.PreferencesClient;
-import com.example.realweather.repository.RealWeatherUtilConsumer;
 import com.example.realweather.repository.database.WeatherDatabaseClient;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +28,7 @@ import static android.appwidget.AppWidgetManager.getInstance;
 /**
  * Implementation of App Widget functionality.
  */
-public class RealWeatherWidgetProvider extends AppWidgetProvider implements PreferencesClient, WeatherDatabaseClient, RealWeatherUtilConsumer, AsyncExecutor {
+public class RealWeatherWidgetProvider extends AppWidgetProvider implements PreferencesClient, WeatherDatabaseClient, AsyncExecutor {
 
 
     public static final RealWeatherWidgetProvider INSTANCE = new RealWeatherWidgetProvider();

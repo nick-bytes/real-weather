@@ -25,22 +25,11 @@
         android:paddingRight="@dimen/list_item_padding_horizontal"
         android:paddingTop="@dimen/list_item_padding_vertical">
 
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="@dimen/list_icon"
-            android:layout_height="@dimen/list_icon"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline"
-            android:src="@{converter.getIcon(model.weather.get(0).description)}"
-            android:contentDescription="icon"
-            tools:ignore="HardcodedText" />
-
         <TextView
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{model.date.substring(6,10)}"
+            android:text="@{String.format(@string/forecastText(model.date.substring(6,10), model.date.substring(11,16)))}"
             android:layout_marginStart="@dimen/list_item_date_start_margin"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             app:layout_constraintBottom_toTopOf="@+id/guideline"

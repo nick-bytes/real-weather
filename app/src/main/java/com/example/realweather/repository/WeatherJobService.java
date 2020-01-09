@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 import static com.example.realweather.BuildConfig.OPEN_WEATHER_MAP_API_KEY;
 import static com.firebase.jobdispatcher.Constraint.ON_ANY_NETWORK;
@@ -38,6 +39,8 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
     static int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
     private FetchForecastTask forecastTask;
     private FetchTodayForecastTask todayForecastTask;
+    private static final WeatherJobService SERVICE = new WeatherJobService();
+    private static JobParameters currentJobParameters;
 
     public static void scheduleJob(@NonNull final Context context) {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
@@ -57,6 +60,7 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
 
     @Override
     public boolean onStartJob(@NonNull JobParameters job) {
+        currentJobParameters = job;
         forecastTask = new FetchForecastTask() {
             @Override
             protected void onPostExecute(Void aVoid) {
@@ -96,7 +100,9 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
             getService().retrieveTodayForecast(getUserZipPreference(contexts[0]), OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<TodayForecastResponse>() {
                 @Override
                 public void onFailure(@NonNull Call<TodayForecastResponse> call, @NonNull Throwable throwable) {
-                    // TODO: 1/8/2020 fetchForecasttask.execute
+                    Timber.e(throwable);
+                    SERVICE.jobFinished(currentJobParameters, false);
+
                 }
 
                 @Override
@@ -125,7 +131,8 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
             getService().retrieveForecast(getUserZipPreference(contexts[0]), OPEN_WEATHER_MAP_API_KEY).enqueue(new Callback<ForecastResponse>() {
                 @Override
                 public void onFailure(@NonNull Call<ForecastResponse> call, @NonNull Throwable throwable) {
-                    // TODO: 1/8/2020 fetchForecasttask.execute
+                    Timber.e(throwable);
+                    SERVICE.jobFinished(currentJobParameters, false);
                 }
 
                 @Override
