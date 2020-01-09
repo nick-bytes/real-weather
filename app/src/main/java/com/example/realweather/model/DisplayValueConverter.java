@@ -33,16 +33,18 @@ public class DisplayValueConverter {
 		return R.drawable.example_appwidget_preview;
 	}
 
-	public int formatTemperature(double temperatureInKelvin) {
+	public String formatTemperature(double temperatureInKelvin) {
 		return metricPreference ? kelvinToCelsius(temperatureInKelvin) : kelvinToFarenheit(temperatureInKelvin);
 	}
 
-	private int kelvinToCelsius(double temperatureInKelvin) {
-		return (int) Math.round(temperatureInKelvin - 273.15);
+	private String kelvinToCelsius(double temperatureInKelvin) {
+		int result = (int) Math.round(temperatureInKelvin - 273.15);
+		return result + "\u00B0";
 	}
 
-	private int kelvinToFarenheit(double temperatureInKelvin) {
-		return (int) Math.round((temperatureInKelvin - 273.15) * 1.8 + 32);
+	private String kelvinToFarenheit(double temperatureInKelvin) {
+		int result = (int) Math.round((temperatureInKelvin - 273.15) * 1.8 + 32);
+		return result + "\u00B0";
 	}
 
 }

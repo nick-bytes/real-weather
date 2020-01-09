@@ -5,14 +5,21 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 
+import androidx.lifecycle.Observer;
+import androidx.preference.PreferenceManager;
+
 import com.example.realweather.R;
+import com.example.realweather.model.DisplayValueConverter;
 import com.example.realweather.model.TodayForecast;
 import com.example.realweather.repository.AsyncExecutor;
 import com.example.realweather.repository.PreferencesClient;
 import com.example.realweather.repository.RealWeatherUtilConsumer;
 import com.example.realweather.repository.database.WeatherDatabaseClient;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -26,27 +33,29 @@ public class RealWeatherWidgetProvider extends AppWidgetProvider implements Pref
 
 
     public static final RealWeatherWidgetProvider INSTANCE = new RealWeatherWidgetProvider();
+    public static Observer<TodayForecast> OBSERVER;
 
     private static void updateAppWidget(final Context context, final AppWidgetManager appWidgetManager,
                                         final int appWidgetId) {
         final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-        INSTANCE.getTodayForecastDao().loadTodayForecast().observeForever(weather -> {
+        OBSERVER = createTodayForecastObserver(context, appWidgetManager, appWidgetId, views);
+        INSTANCE.getTodayForecastDao().loadTodayForecast().observeForever(OBSERVER);
+    }
+
+    @NotNull
+    private static Observer<TodayForecast> createTodayForecastObserver(Context context, AppWidgetManager appWidgetManager, int appWidgetId, RemoteViews views) {
+        return weather -> {
             if (weather != null) {
                 updateValues(views, weather, context);
                 appWidgetManager.updateAppWidget(appWidgetId, views);
             }
-        });
+        };
     }
 
     private static void updateValues(RemoteViews views, TodayForecast todayForecast, Context context) {
-        views.setTextViewText(R.id.location, INSTANCE.getSelectedPosition(context)[0]);
-        views.setTextViewText(R.id.temperature, INSTANCE.formatTemperature(context, todayForecast.getMain().getTemp()));
-        views.setImageViewResource(R.id.weatherIcon, INSTANCE.getIcon(todayForecast.getWeather().getDescription()));
-        views.setTextViewText(R.id.maxTemp, INSTANCE.formatTemperature(context, todayForecast.getMain().getMaxTemp()));
-        views.setTextViewText(R.id.minTemp, INSTANCE.formatTemperature(context, todayForecast.getMain().getMinTemp()));
-        views.setTextViewText(R.id.pressure, INSTANCE.formatPressure(todayForecast.getMain().getPressure()));
-        views.setTextViewText(R.id.humidity, INSTANCE.formatHumidity(todayForecast.getMain().getHumidity()));
-
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        DisplayValueConverter converter = new DisplayValueConverter(sharedPreferences.getBoolean(context.getString(R.string.pref_units_key), false));
+        views.setTextViewText(R.id.temperature, converter.formatTemperature(todayForecast.getMain().getTemp()));
     }
 
     @Override
@@ -63,20 +72,6 @@ public class RealWeatherWidgetProvider extends AppWidgetProvider implements Pref
             int[] ids = (int[]) Objects.requireNonNull(intent.getExtras()).get(AppWidgetManager.EXTRA_APPWIDGET_IDS);
             onUpdate(context, getInstance(context), Objects.requireNonNull(ids));
         }
-
-        // TODO: 1/7/2020 stop observing?
     }
-
-//	public void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-//		for (int appWidgetId : appWidgetIds) {
-//			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), 0);
-//			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_time_widget);
-//			views.setTextViewText(R.id.widget_textview_title, INSTANCE.getWidgetTitle(context));
-//			views.setRemoteAdapter(R.id.widget_listview_ingredients, RealWeatherRemoteViewsService.getIntent(context));
-//			views.setPendingIntentTemplate(R.id.widget_listview_ingredients, pendingIntent);
-//			views.setOnClickPendingIntent(R.id.widget_parent_layout, pendingIntent);
-//			appWidgetManager.updateAppWidget(appWidgetId, views);
-//		}
-//	}
 }
 

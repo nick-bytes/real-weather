@@ -90,6 +90,7 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 
 	private Collection<Callable<Void>> createStoreForecastAsyncCallable(List<Forecast> results) {
 		return Collections.singleton(() -> {
+			getForecastDao().deleteForecastEntries();
 			getForecastDao().insertForecast(results);
 			return NOTHING;
 		});
@@ -98,6 +99,7 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 
 	private Collection<Callable<Void>> createStoreTodayForecastAsyncCallable(TodayForecast result) {
 		return Collections.singleton(() -> {
+			getTodayForecastDao().deleteTodayForecastEntry();
 			getTodayForecastDao().insertTodayForecast(result);
 			return NOTHING;
 		});
@@ -195,7 +197,4 @@ public class WeatherRepository implements WeatherDatabaseClient, GetWeatherDataC
 				Executors.newFixedThreadPool(3));
 	}
 
-	public void updateUnitPreference(Context context) {
-		// TODO: 1/7/2020
-	}
 }

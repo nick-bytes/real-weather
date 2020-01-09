@@ -104,6 +104,7 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
                     if (response.isSuccessful() && response.body() != null) {
                         TodayForecast result = transformResponse(response.body());
                         executeSingleThreadAsync((Collections.singleton(() -> {
+                            getTodayForecastDao().deleteTodayForecastEntry();
                             getTodayForecastDao().insertTodayForecast(result);
                             return NOTHING;
                         })));
@@ -132,6 +133,7 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
                     if (response.isSuccessful() && response.body() != null) {
                         List<Forecast> results = response.body().getList();
                         executeSingleThreadAsync((Collections.singleton(() -> {
+                            getForecastDao().deleteForecastEntries();
                             getForecastDao().insertForecast(results);
                             return NOTHING;
                         })));

@@ -1,132 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="28dp"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        tools:text="01 Aug" />
-
-    <ImageView
-        android:id="@+id/weatherIcon"
-        android:layout_width="79dp"
-        android:layout_height="85dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/date"
-        android:layout_marginEnd="70dp"
-        android:contentDescription="Weather icon"
-        app:srcCompat="@drawable/example_appwidget_preview"
-        tools:ignore="HardcodedText" />
-
-    <TextView
         android:id="@+id/temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/date"
-        android:layout_below="@+id/location"
         android:textSize="16sp"
         android:textStyle="bold"
         tools:text="32 C" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="95dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="154dp"
-        android:orientation="horizontal"
-        >
-
-        <TextView
-            android:id="@+id/temperatureLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignTop="@+id/minTemp"
-            android:text="@string/minTemp" />
-
-        <TextView
-            android:id="@+id/minTemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/maxTemp"
-            android:layout_alignTop="@+id/tv_widget_pressure_label"
-            tools:text="32 C" />
-
-        <TextView
-            android:id="@+id/tv_widget_pressure_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/tv_widget_humidity_label"
-            android:layout_marginTop="12dp"
-            android:text="@string/widget_pressure_string" />
-
-        <TextView
-            android:id="@+id/pressure"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/humidity"
-            android:layout_marginStart="8dp"
-            android:layout_alignTop="@+id/temperatureLabel"
-            tools:text="78 hPa" />
-
-
-        <TextView
-            android:id="@+id/tv_widget_max_temp_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/temperatureLabel"
-            android:layout_centerVertical="true"
-            android:text="@string/widget_max_temp_string"
-            android:textAlignment="center" />
-
-        <TextView
-            android:id="@+id/maxTemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="34dp"
-            tools:text="45 C" />
-
-        <TextView
-            android:id="@+id/tv_widget_humidity_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="88dp"
-            android:text="@string/widget_humidity_text" />
-
-        <TextView
-            android:id="@+id/humidity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="153dp"
-            tools:text="78%" />
-
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/date"
-        android:layout_marginTop="79dp"
-        android:text="@string/nullable"
-        tools:text="Rizia" />
 
 </RelativeLayout>

@@ -21,6 +21,7 @@ import com.example.realweather.databinding.DashboardFragmentBinding;
 import com.example.realweather.model.DisplayValueConverter;
 import com.example.realweather.repository.PreferencesClient;
 import com.example.realweather.viewmodel.DashboardViewModel;
+import com.google.android.gms.ads.AdRequest;
 
 public class DashboardFragment extends Fragment implements PreferencesClient {
 
@@ -59,7 +60,15 @@ public class DashboardFragment extends Fragment implements PreferencesClient {
             binding.setConverter(new DisplayValueConverter(getUnitUserPreference(requireContext())));
         });
         setHasOptionsMenu(true);
+        initializeAds(binding);
         return binding.getRoot();
+    }
+
+    private void initializeAds(DashboardFragmentBinding binding) {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        binding.adView.loadAd(adRequest);
     }
 
     @Override

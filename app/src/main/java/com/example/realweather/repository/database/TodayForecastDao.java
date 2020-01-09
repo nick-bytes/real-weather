@@ -18,6 +18,9 @@ import com.example.realweather.model.TodayForecast;
 @Dao
 public interface TodayForecastDao {
 
+    @Query("DELETE FROM todayForecast")
+    void deleteTodayForecastEntry();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertTodayForecast(TodayForecast todayForecast);
 

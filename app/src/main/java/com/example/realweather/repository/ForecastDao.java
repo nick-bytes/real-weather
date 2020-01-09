@@ -20,6 +20,9 @@ import java.util.List;
 @Dao
 public interface ForecastDao {
 
+    @Query("DELETE FROM forecast")
+    void deleteForecastEntries();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertForecast(List<Forecast> forecasts);
 
