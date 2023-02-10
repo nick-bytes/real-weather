@@ -1,23 +1,18 @@
-package com.example.realweather;
+package com.example.realweather
 
-import android.app.Application;
+import android.app.Application
+import androidx.room.Room.databaseBuilder
+import com.example.realweather.repository.database.WeatherDatabase
+import com.example.realweather.repository.database.WeatherDatabaseValueHolder
+import timber.log.Timber
+import timber.log.Timber.DebugTree
 
-import androidx.room.Room;
-
-import com.example.realweather.repository.database.WeatherDatabase;
-import com.example.realweather.repository.database.WeatherDatabaseValueHolder;
-
-import timber.log.Timber;
-
-public class RealWeatherApplication extends Application {
-
-	@Override
-	public void onCreate() {
-		super.onCreate();
-			if (BuildConfig.DEBUG) {
-				Timber.plant(new Timber.DebugTree());
-			}
-			WeatherDatabaseValueHolder.INSTANCE.setValue(Room.databaseBuilder(this, WeatherDatabase.class, "WeatherDatabase").build());
-		}
-
+class RealWeatherApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
+        }
+        WeatherDatabaseValueHolder.INSTANCE.value = databaseBuilder(this, WeatherDatabase::class.java, "WeatherDatabase").build()
+    }
 }

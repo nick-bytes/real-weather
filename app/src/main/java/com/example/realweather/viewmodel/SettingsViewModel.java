@@ -7,7 +7,7 @@ import com.example.realweather.repository.WeatherRepository;
 public class SettingsViewModel extends ViewModel {
 
 
-    private WeatherRepository repository = WeatherRepository.INSTANCE;
+    private final WeatherRepository repository = WeatherRepository.INSTANCE;
 
     public SettingsViewModel() {
     }

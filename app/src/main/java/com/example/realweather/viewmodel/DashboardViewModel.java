@@ -13,7 +13,7 @@ public class DashboardViewModel extends ViewModel {
 
 	private LiveData<List<Forecast>> forecastList;
 	private LiveData<TodayForecast> todayForecast;
-	private WeatherRepository repository = WeatherRepository.INSTANCE;
+    private final WeatherRepository repository = WeatherRepository.INSTANCE;
 
 	public DashboardViewModel() {
 

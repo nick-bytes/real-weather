@@ -7,7 +7,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.example.realweather.R;
 import com.example.realweather.databinding.MainActivityBinding;
-import com.example.realweather.repository.WeatherJobService;
+import com.example.realweather.repository.WeatherJobWorker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,8 +15,8 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		MainActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
-		setSupportActionBar(binding.toolbar);
-		WeatherJobService.scheduleJob(this);
+        setSupportActionBar(binding.toolbar);
+        WeatherJobWorker.scheduleJob(this);
 	}
 
 }

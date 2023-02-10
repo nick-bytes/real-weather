@@ -34,7 +34,7 @@ public class DisplayValueConverter {
 	}
 
 	public String formatTemperature(double temperatureInKelvin) {
-		return metricPreference ? kelvinToCelsius(temperatureInKelvin) : kelvinToFarenheit(temperatureInKelvin);
+		return metricPreference ? kelvinToCelsius(temperatureInKelvin) : kelvinToFahrenheit(temperatureInKelvin);
 	}
 
 	private String kelvinToCelsius(double temperatureInKelvin) {
@@ -42,9 +42,9 @@ public class DisplayValueConverter {
 		return result + "\u00B0";
 	}
 
-	private String kelvinToFarenheit(double temperatureInKelvin) {
-		int result = (int) Math.round((temperatureInKelvin - 273.15) * 1.8 + 32);
-		return result + "\u00B0";
-	}
+    private String kelvinToFahrenheit(double temperatureInKelvin) {
+        int result = (int) Math.round((temperatureInKelvin - 273.15) * 1.8 + 32);
+        return result + "\u00B0";
+    }
 
 }

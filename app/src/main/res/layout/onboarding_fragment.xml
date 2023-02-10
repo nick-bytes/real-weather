@@ -68,7 +68,7 @@
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{callback.onEnableLocationClicked}"
+            android:onClick="@{callback.onEnableLocationClick}"
             android:text="@string/enableLocation"
             android:textAllCaps="true" />
 

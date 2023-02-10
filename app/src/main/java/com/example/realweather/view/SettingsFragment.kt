@@ -1,83 +1,65 @@
-package com.example.realweather.view;
+package com.example.realweather.view
 
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.InputType;
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Bundle
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
+import android.text.InputType
+import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.NavHostFragment
+import androidx.preference.EditTextPreference
+import androidx.preference.PreferenceFragmentCompat
+import com.example.realweather.R
+import com.example.realweather.repository.PreferencesClient
+import com.example.realweather.viewmodel.SettingsViewModel
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.preference.EditTextPreference;
-import androidx.preference.PreferenceFragmentCompat;
+class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener, PreferencesClient {
+    private val viewModel: SettingsViewModel by viewModels()
 
-import com.example.realweather.R;
-import com.example.realweather.repository.PreferencesClient;
-import com.example.realweather.viewmodel.SettingsViewModel;
+    // TODO: 1/8/2020 change action bar to back button
+    override fun onCreatePreferences(bundle: Bundle?, s: String?) {
+        addPreferencesFromResource(R.xml.pref_general)
+    }
 
-import java.util.Objects;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(true /* enabled by default */) {
+            override fun handleOnBackPressed() {
+                NavHostFragment.findNavController(this@SettingsFragment).navigate(R.id.dashboardFragment)
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
-public class SettingsFragment extends PreferenceFragmentCompat implements
-		SharedPreferences.OnSharedPreferenceChangeListener, PreferencesClient {
+    override fun onResume() {
+        super.onResume()
+        val preference = findPreference<EditTextPreference>(getString(R.string.pref_zip_key))
+        preference?.setOnBindEditTextListener { editText: EditText ->
+            editText.inputType = InputType.TYPE_CLASS_NUMBER
+            editText.selectAll()
+            val maxLength = 5
+            editText.filters = arrayOf<InputFilter>(LengthFilter(maxLength))
+        }
+    }
 
-	private SettingsViewModel viewModel;
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        if ("pref_zip_key" == key) {
+            sharedPreferences.getString(key, "21215")
+                    ?.let { viewModel.reinitializeWeatherData(Integer.parseInt(it)) }
 
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		viewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
-	}
+        }
+    }
 
-	// TODO: 1/8/2020 change action bar to back button
-	@Override
-	public void onCreatePreferences(Bundle bundle, String s) {
-		addPreferencesFromResource(R.xml.pref_general);
-	}
+    override fun onStart() {
+        super.onStart()
+        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
+    }
 
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
-			@Override
-			public void handleOnBackPressed() {
-				NavHostFragment.findNavController(SettingsFragment.this).navigate(R.id.dashboardFragment);
-			}
-		};
-		requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		EditTextPreference preference = findPreference(getString(R.string.pref_zip_key));
-		Objects.requireNonNull(preference).setOnBindEditTextListener(editText -> {
-			editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-			editText.selectAll();
-			int maxLength = 5;
-			editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-		});
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if ("pref_zip_key".equals(key)) {
-			viewModel.reinitializeWeatherData(Integer.valueOf(sharedPreferences.getString(key, "21215")));
-		}
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
-
+    override fun onStop() {
+        super.onStop()
+        preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
+    }
 }

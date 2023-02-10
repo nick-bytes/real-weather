@@ -1,9 +1,14 @@
 package com.example.realweather.repository;
 
+import static com.example.realweather.BuildConfig.OPEN_WEATHER_MAP_API_KEY;
+import static com.firebase.jobdispatcher.Constraint.ON_ANY_NETWORK;
+
 import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
+import androidx.work.ListenableWorker;
+import androidx.work.WorkerParameters;
 
 import com.example.realweather.model.Forecast;
 import com.example.realweather.model.ForecastResponse;
@@ -15,9 +20,9 @@ import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.JobParameters;
-import com.firebase.jobdispatcher.JobService;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,10 +33,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-import static com.example.realweather.BuildConfig.OPEN_WEATHER_MAP_API_KEY;
-import static com.firebase.jobdispatcher.Constraint.ON_ANY_NETWORK;
+public class WeatherJobWorker extends ListenableWorker implements AsyncExecutor {
 
-public class WeatherJobService extends JobService implements AsyncExecutor {
+    private static final WeatherJobWorker SERVICE = new WeatherJobWorker();
 
     static String REAL_WEATHER_SYNC = "REAL_WEATHER_SYNC";
     static int SYNC_INTERVAL_HOURS = 3;
@@ -39,13 +43,17 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
     static int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
     private FetchForecastTask forecastTask;
     private FetchTodayForecastTask todayForecastTask;
-    private static final WeatherJobService SERVICE = new WeatherJobService();
+
+    public WeatherJobWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
+        super(appContext, workerParams);
+    }
+
     private static JobParameters currentJobParameters;
 
     public static void scheduleJob(@NonNull final Context context) {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
         Job weatherUpdateJob = dispatcher.newJobBuilder()
-                .setService(WeatherJobService.class)
+                .setService(WeatherJobWorker.class)
                 .setTag(REAL_WEATHER_SYNC)
                 .setConstraints(ON_ANY_NETWORK)
                 .setLifetime(Lifetime.FOREVER)
@@ -59,7 +67,7 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
     }
 
     @Override
-    public boolean onStartJob(@NonNull JobParameters job) {
+    public ListenableFuture<Result> startWork() {
         currentJobParameters = job;
         forecastTask = new FetchForecastTask() {
             @Override
@@ -78,11 +86,6 @@ public class WeatherJobService extends JobService implements AsyncExecutor {
         todayForecastTask.execute();
         return true;
 
-    }
-
-    @Override
-    public boolean onStopJob(@NonNull JobParameters job) {
-        return false;
     }
 
     private static TodayForecast transformResponse(TodayForecastResponse response) {

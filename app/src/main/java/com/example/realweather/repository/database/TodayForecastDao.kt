@@ -1,30 +1,26 @@
-package com.example.realweather.repository.database;
+package com.example.realweather.repository.database
 
-
-import androidx.lifecycle.LiveData;
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-
-import com.example.realweather.model.TodayForecast;
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.example.realweather.model.TodayForecast
 
 /**
  * API for interacting with room database
- * <p>
- * Reference: https://developer.android.com/training/data-storage/room/accessing-data
+ *
+ *
+ * Reference: [...](https://developer.android.com/training/data-storage/room/accessing-data)
  */
-
 @Dao
-public interface TodayForecastDao {
-
+interface TodayForecastDao {
     @Query("DELETE FROM todayForecast")
-    void deleteTodayForecastEntry();
+    fun deleteTodayForecastEntry()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertTodayForecast(TodayForecast todayForecast);
+    fun insertTodayForecast(todayForecast: TodayForecast?)
 
     @Query("SELECT * FROM todayForecast")
-    LiveData<TodayForecast> loadTodayForecast();
-
+    fun loadTodayForecast(): LiveData<TodayForecast?>?
 }

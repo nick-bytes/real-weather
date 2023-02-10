@@ -1,76 +1,66 @@
-package com.example.realweather.view;
+package com.example.realweather.view
 
-
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.widget.RemoteViews;
-
-import androidx.lifecycle.Observer;
-import androidx.preference.PreferenceManager;
-
-import com.example.realweather.R;
-import com.example.realweather.model.DisplayValueConverter;
-import com.example.realweather.model.TodayForecast;
-import com.example.realweather.repository.AsyncExecutor;
-import com.example.realweather.repository.PreferencesClient;
-import com.example.realweather.repository.database.WeatherDatabaseClient;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-
-import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE;
-import static android.appwidget.AppWidgetManager.getInstance;
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
+import android.content.Context
+import android.content.Intent
+import android.widget.RemoteViews
+import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
+import com.example.realweather.R
+import com.example.realweather.model.DisplayValueConverter
+import com.example.realweather.model.TodayForecast
+import com.example.realweather.repository.AsyncExecutor
+import com.example.realweather.repository.PreferencesClient
+import com.example.realweather.repository.database.WeatherDatabaseClient
 
 /**
  * Implementation of App Widget functionality.
  */
-public class RealWeatherWidgetProvider extends AppWidgetProvider implements PreferencesClient, WeatherDatabaseClient, AsyncExecutor {
-
-
-    public static final RealWeatherWidgetProvider INSTANCE = new RealWeatherWidgetProvider();
-    public static Observer<TodayForecast> OBSERVER;
-
-    private static void updateAppWidget(final Context context, final AppWidgetManager appWidgetManager,
-                                        final int appWidgetId) {
-        final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-        OBSERVER = createTodayForecastObserver(context, appWidgetManager, appWidgetId, views);
-        INSTANCE.getTodayForecastDao().loadTodayForecast().observeForever(OBSERVER);
-    }
-
-    @NotNull
-    private static Observer<TodayForecast> createTodayForecastObserver(Context context, AppWidgetManager appWidgetManager, int appWidgetId, RemoteViews views) {
-        return weather -> {
-            if (weather != null) {
-                updateValues(views, weather, context);
-                appWidgetManager.updateAppWidget(appWidgetId, views);
+class RealWeatherWidgetProvider : AppWidgetProvider(), PreferencesClient, WeatherDatabaseClient, AsyncExecutor {
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray?) {
+        appWidgetIds?.let {
+            for (appWidgetId in it) {
+                updateAppWidget(context, appWidgetManager, appWidgetId)
             }
-        };
+        }
+
     }
 
-    private static void updateValues(RemoteViews views, TodayForecast todayForecast, Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        DisplayValueConverter converter = new DisplayValueConverter(sharedPreferences.getBoolean(context.getString(R.string.pref_units_key), false));
-        views.setTextViewText(R.id.temperature, converter.formatTemperature(todayForecast.getMain().getTemp()));
-    }
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
+            intent.extras?.let {
+                onUpdate(context, AppWidgetManager.getInstance(context),
+                        it.get(AppWidgetManager.EXTRA_APPWIDGET_IDS) as? IntArray)
+            }
 
-    @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
-        if (Objects.equals(intent.getAction(), ACTION_APPWIDGET_UPDATE)) {
-            int[] ids = (int[]) Objects.requireNonNull(intent.getExtras()).get(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-            onUpdate(context, getInstance(context), Objects.requireNonNull(ids));
+    companion object {
+        private val INSTANCE = RealWeatherWidgetProvider()
+        private var OBSERVER: Observer<TodayForecast>? = null
+        private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
+                                    appWidgetId: Int) {
+            val views = RemoteViews(context.packageName, R.layout.widget_layout)
+            OBSERVER = createTodayForecastObserver(context, appWidgetManager, appWidgetId, views)
+            INSTANCE.todayForecastDao.loadTodayForecast()?.observeForever(OBSERVER)
+        }
+
+        private fun createTodayForecastObserver(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, views: RemoteViews): Observer<TodayForecast> {
+            return Observer { weather: TodayForecast? ->
+                if (weather != null) {
+                    updateValues(views, weather, context)
+                    appWidgetManager.updateAppWidget(appWidgetId, views)
+                }
+            }
+        }
+
+        private fun updateValues(views: RemoteViews, todayForecast: TodayForecast, context: Context) {
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val converter = DisplayValueConverter(sharedPreferences.getBoolean(context.getString(R.string.pref_units_key), false))
+            views.setTextViewText(R.id.temperature, converter.formatTemperature(todayForecast.main.temp))
         }
     }
 }
-

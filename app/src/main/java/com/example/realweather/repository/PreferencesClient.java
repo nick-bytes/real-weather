@@ -16,8 +16,8 @@ public interface PreferencesClient {
 	}
 
 	default int getUserZipPreference(Context context) {
-		return Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(context)
-				.getString(context.getString(R.string.pref_zip_key), "21215"));
+		return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.pref_zip_key), "21215"));
 	}
 
 	default boolean hasBeenOnboarded(Context context) {

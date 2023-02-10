@@ -15,7 +15,7 @@ import java.util.Objects;
 public class OnboardingViewModel extends ViewModel {
 
     public static final int REQUEST_LOCATION_PERMISSION = 1;
-    private WeatherRepository repository = WeatherRepository.INSTANCE;
+    private final WeatherRepository repository = WeatherRepository.INSTANCE;
 
     public boolean hasBeenOnboarded(Context context) {
         return repository.hasBeenOnboarded(context);

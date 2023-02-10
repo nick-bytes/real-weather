@@ -1,64 +1,40 @@
-package com.example.realweather.view;
+package com.example.realweather.view
 
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.example.realweather.R
+import com.example.realweather.databinding.ItemForecastBinding
+import com.example.realweather.model.DisplayValueConverter
+import com.example.realweather.model.Forecast
+import com.example.realweather.view.ForecastAdapter.ForecastAdapterViewHolder
 
-import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.RecyclerView;
+class ForecastAdapter(private val metricPreference: Boolean) : RecyclerView.Adapter<ForecastAdapterViewHolder>() {
+    private var list: List<Forecast>? = null
+    override fun getItemCount(): Int {
+        return list?.size ?: 0
+    }
 
-import com.example.realweather.R;
-import com.example.realweather.databinding.ItemForecastBinding;
-import com.example.realweather.model.DisplayValueConverter;
-import com.example.realweather.model.Forecast;
+    override fun onBindViewHolder(holder: ForecastAdapterViewHolder, position: Int) {
+        holder.bind(list!![position])
+    }
 
-import java.util.List;
+    fun setList(newList: List<Forecast>?) {
+        list = newList
+        notifyDataSetChanged()
+    }
 
-public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastAdapterViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding = DataBindingUtil.inflate<ItemForecastBinding>(layoutInflater, R.layout.item_forecast, parent, false)
+        return ForecastAdapterViewHolder(binding)
+    }
 
-	private List<Forecast> list;
-	private boolean metricPreference;
-
-	public ForecastAdapter(boolean metricPreference) {
-		this.metricPreference = metricPreference;
-	}
-
-	@Override
-	public int getItemCount() {
-		return list == null ? 0 : list.size();
-	}
-
-	@Override
-	public void onBindViewHolder(@NonNull ForecastAdapterViewHolder holder, int position) {
-		holder.bind(list.get(position));
-	}
-
-	void setList(List<Forecast> newList) {
-		list = newList;
-		notifyDataSetChanged();
-	}
-
-	@NonNull
-	@Override
-	public ForecastAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-		ItemForecastBinding binding =
-				DataBindingUtil.inflate(layoutInflater, R.layout.item_forecast, parent, false);
-		return new ForecastAdapterViewHolder(binding);
-	}
-
-	class ForecastAdapterViewHolder extends RecyclerView.ViewHolder {
-
-		final ItemForecastBinding binding;
-
-		ForecastAdapterViewHolder(ItemForecastBinding binding) {
-			super(binding.getRoot());
-			this.binding = binding;
-		}
-
-		void bind(Forecast forecast) {
-			binding.setConverter(new DisplayValueConverter(metricPreference));
-			binding.setModel(forecast);
-		}
-	}
+    inner class ForecastAdapterViewHolder(private val binding: ItemForecastBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(forecast: Forecast?) {
+            binding.converter = DisplayValueConverter(metricPreference)
+            binding.model = forecast
+        }
+    }
 }

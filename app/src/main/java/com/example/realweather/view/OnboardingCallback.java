@@ -4,5 +4,5 @@ import android.view.View;
 
 public interface OnboardingCallback {
 
-    void onEnableLocationClicked(View view);
+    void onEnableLocationClick(View view);
 }

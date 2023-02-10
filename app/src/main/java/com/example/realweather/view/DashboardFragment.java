@@ -52,8 +52,8 @@ public class DashboardFragment extends Fragment implements PreferencesClient {
         binding.forecastRecyclerView.setAdapter(forecastAdapter);
         binding.forecastRecyclerView.setHasFixedSize(true);
         setupViewModel();
-        viewModel.getForecast().observe(this, forecastAdapter::setList);
-        viewModel.getTodayForecast().observe(this, forecast -> {
+        viewModel.getForecast().observe(getViewLifecycleOwner(), forecastAdapter::setList);
+        viewModel.getTodayForecast().observe(getViewLifecycleOwner(), forecast -> {
             if (forecast == null) return;
             binding.setModel(forecast);
             binding.setConverter(new DisplayValueConverter(getUnitUserPreference(requireContext())));
@@ -65,7 +65,6 @@ public class DashboardFragment extends Fragment implements PreferencesClient {
 
     private void initializeAds(DashboardFragmentBinding binding) {
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         binding.adView.loadAd(adRequest);
     }

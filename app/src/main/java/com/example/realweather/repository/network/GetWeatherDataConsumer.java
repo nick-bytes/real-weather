@@ -8,6 +8,6 @@ package com.example.realweather.repository.network;
 public interface GetWeatherDataConsumer {
 
 	default GetWeatherDataService getService() {
-		return RetrofitClient.getInstance().create(GetWeatherDataService.class);
+		return RetrofitClient.Companion.getInstance().create(GetWeatherDataService.class);
 	}
 }
