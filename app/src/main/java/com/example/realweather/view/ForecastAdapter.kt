@@ -17,7 +17,10 @@ class ForecastAdapter(private val metricPreference: Boolean) : RecyclerView.Adap
     }
 
     override fun onBindViewHolder(holder: ForecastAdapterViewHolder, position: Int) {
-        holder.bind(list!![position])
+        list?.let {
+            holder.bind(it[position])
+        }
+
     }
 
     fun setList(newList: List<Forecast>?) {

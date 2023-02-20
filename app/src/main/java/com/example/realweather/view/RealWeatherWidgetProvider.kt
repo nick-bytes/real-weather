@@ -40,27 +40,46 @@ class RealWeatherWidgetProvider : AppWidgetProvider(), PreferencesClient, Weathe
 
     companion object {
         private val INSTANCE = RealWeatherWidgetProvider()
-        private var OBSERVER: Observer<TodayForecast>? = null
-        private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
-                                    appWidgetId: Int) {
+        private fun updateAppWidget(
+            context: Context, appWidgetManager: AppWidgetManager,
+            appWidgetId: Int
+        ) {
             val views = RemoteViews(context.packageName, R.layout.widget_layout)
-            OBSERVER = createTodayForecastObserver(context, appWidgetManager, appWidgetId, views)
-            INSTANCE.todayForecastDao.loadTodayForecast()?.observeForever(OBSERVER)
+            val observer: Observer<TodayForecast?> =
+                createTodayForecastObserver(context, appWidgetManager, appWidgetId, views)
+            INSTANCE.todayForecastDao.loadTodayForecast().observeForever(observer)
         }
 
-        private fun createTodayForecastObserver(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, views: RemoteViews): Observer<TodayForecast> {
+        private fun createTodayForecastObserver(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int,
+            views: RemoteViews
+        ): Observer<TodayForecast?> {
             return Observer { weather: TodayForecast? ->
-                if (weather != null) {
+                weather?.let {
                     updateValues(views, weather, context)
                     appWidgetManager.updateAppWidget(appWidgetId, views)
                 }
             }
         }
 
-        private fun updateValues(views: RemoteViews, todayForecast: TodayForecast, context: Context) {
+        private fun updateValues(
+            views: RemoteViews,
+            todayForecast: TodayForecast,
+            context: Context
+        ) {
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val converter = DisplayValueConverter(sharedPreferences.getBoolean(context.getString(R.string.pref_units_key), false))
-            views.setTextViewText(R.id.temperature, converter.formatTemperature(todayForecast.main.temp))
+            val converter = DisplayValueConverter(
+                sharedPreferences.getBoolean(
+                    context.getString(R.string.pref_units_key),
+                    false
+                )
+            )
+            views.setTextViewText(
+                R.id.temperature,
+                converter.formatHumidity(todayForecast.main.temp)
+            )
         }
     }
 }

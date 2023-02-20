@@ -16,17 +16,17 @@ import java.util.List;
 public class Forecast implements Parcelable {
 
 	@SuppressWarnings("unused")
-    public static final Parcelable.Creator<Forecast> CREATOR = new Parcelable.Creator<Forecast>() {
-        @Override
-        public Forecast createFromParcel(Parcel in) {
-            return new Forecast(in);
-        }
+	public static final Parcelable.Creator<Forecast> CREATOR = new Parcelable.Creator<>() {
+		@Override
+		public Forecast createFromParcel(Parcel in) {
+			return new Forecast(in);
+		}
 
-        @Override
-        public Forecast[] newArray(int size) {
-            return new Forecast[size];
-        }
-    };
+		@Override
+		public Forecast[] newArray(int size) {
+			return new Forecast[size];
+		}
+	};
 	@SerializedName("dt_txt")
 	private String date;
 	@PrimaryKey(autoGenerate = true)

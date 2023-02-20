@@ -29,17 +29,19 @@
             android:id="@+id/day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{String.format(@string/forecastText(model.date.substring(6,10), model.date.substring(11,16)))}"
+            style="@android:style/TextAppearance.Material.Body1"
+            android:text="@{String.format(@string/forecastText(converter.formatDate(model.date.substring(0,10)), converter.formatTime(model.date.substring(11,16))))}"
             android:layout_marginStart="@dimen/list_item_date_start_margin"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintLeft_toRightOf="@+id/icon"
-            tools:text="Today, April 03"/>
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Today, April 03" />
 
         <TextView
             android:id="@+id/highTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
             android:layout_marginEnd="@dimen/forecast_temperature_space"
             android:fontFamily="sans-serif-light"
             android:textColor="@color/primary_text"
@@ -52,7 +54,8 @@
 
         <TextView
             android:id="@+id/lowTemp"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
+            android:paddingBottom="10dp"
             android:layout_height="wrap_content"
             android:text="@{converter.formatTemperature(model.main.minTemp)}"
             android:fontFamily="sans-serif-light"
@@ -61,7 +64,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/guideline"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline"
-            tools:text="10\u00b0"/>
+            tools:text="10\u00b0" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"

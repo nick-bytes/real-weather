@@ -22,5 +22,5 @@ interface TodayForecastDao {
     fun insertTodayForecast(todayForecast: TodayForecast?)
 
     @Query("SELECT * FROM todayForecast")
-    fun loadTodayForecast(): LiveData<TodayForecast?>?
+    fun loadTodayForecast(): LiveData<TodayForecast?>
 }

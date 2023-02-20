@@ -1,11 +1,9 @@
 package com.example.realweather.viewmodel;
 
-import android.Manifest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import com.example.realweather.repository.WeatherRepository;
@@ -24,7 +22,7 @@ public class OnboardingViewModel extends ViewModel {
     public void handleOnboarding(Context context, String zip) {
         repository.saveUserZip(context, zip);
         repository.markAsOnboarded(context);
-        repository.initializeWeatherData(Integer.valueOf(zip));
+        repository.initializeWeatherData(Integer.parseInt(zip));
     }
 
     public boolean isNetworkConnected(Context context) {
@@ -32,10 +30,6 @@ public class OnboardingViewModel extends ViewModel {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities networkCapabilities = Objects.requireNonNull(connectivityManager).getNetworkCapabilities(connectivityManager.getActiveNetwork());
         return (Objects.requireNonNull(networkCapabilities).hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI));
-    }
-
-    public <T extends Fragment> void requestPermissions(T fragment) {
-        fragment.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION }, REQUEST_LOCATION_PERMISSION);
     }
 
 

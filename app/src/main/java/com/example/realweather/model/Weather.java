@@ -6,7 +6,7 @@ import android.os.Parcelable;
 public class Weather implements Parcelable {
 
 	@SuppressWarnings("unused")
-	public static final Parcelable.Creator<Weather> CREATOR = new Parcelable.Creator<Weather>() {
+	public static final Parcelable.Creator<Weather> CREATOR = new Parcelable.Creator<>() {
 		@Override
 		public Weather createFromParcel(Parcel in) {
 			return new Weather(in);
