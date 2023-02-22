@@ -13,22 +13,32 @@
             app:destination="@id/dashboardFragment" />
     </fragment>
 
-        <fragment
-            android:id="@+id/dashboardFragment"
-            android:name="com.example.realweather.view.DashboardFragment"
-            android:label="DashboardFragment">
-            <argument
-                android:name="zip"
-                android:defaultValue="21215"
-                app:argType="integer" />
-            <action
-                android:id="@+id/dashboardFragment_to_settingsFragment"
-                app:destination="@id/settingsFragment" />
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.example.realweather.view.DashboardFragment"
+        android:label="DashboardFragment">
+        <argument
+            android:name="zip"
+            android:defaultValue="21215"
+            app:argType="integer" />
+        <action
+            android:id="@+id/dashboardFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
 
-        </fragment>
-        <fragment
-            android:id="@+id/settingsFragment"
-            android:name="com.example.realweather.view.SettingsFragment"
-            android:label="DetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.realweather.view.SettingsFragment"
+        android:label="DetailFragment">
+        <action
+            android:id="@+id/dashboardFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.realweather.view.AboutFragment"
+        android:label="AboutFragment" />
 
 </navigation>

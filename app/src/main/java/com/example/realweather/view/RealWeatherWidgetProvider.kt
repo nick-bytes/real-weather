@@ -78,7 +78,7 @@ class RealWeatherWidgetProvider : AppWidgetProvider(), PreferencesClient, Weathe
             )
             views.setTextViewText(
                 R.id.temperature,
-                converter.formatHumidity(todayForecast.main.temp)
+                converter.formatTemperature(todayForecast.main.temp)
             )
         }
     }

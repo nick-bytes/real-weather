@@ -10,7 +10,9 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.preference.EditTextPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.realweather.R
 import com.example.realweather.repository.PreferencesClient
@@ -36,13 +38,21 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
 
     override fun onResume() {
         super.onResume()
-        val preference = findPreference<EditTextPreference>(getString(R.string.pref_zip_key))
+        val preference =
+            findPreference<EditTextPreference>(getString(R.string.pref_zip_key))
         preference?.setOnBindEditTextListener { editText: EditText ->
             editText.inputType = InputType.TYPE_CLASS_NUMBER
             editText.selectAll()
             val maxLength = 5
             editText.filters = arrayOf<InputFilter>(LengthFilter(maxLength))
         }
+
+        val button = findPreference<Preference>(getString(R.string.pref_button_key))
+        button?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                findNavController().navigate(R.id.aboutFragment)
+                true
+            }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {

@@ -45,7 +45,7 @@ class DisplayValueConverter(private val metricPreference: Boolean) {
     }
 
     fun formatTime(time: String?): String {
-        return LocalTime.parse(time).format(DateTimeFormatter.ofPattern("h:mma"))
+        return LocalTime.parse(time).format(DateTimeFormatter.ofPattern("ha"))
     }
 
     fun formatDate(date: String?): String {

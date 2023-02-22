@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">RealWeather</string>
+    <string name="app_name">SimpleWeather</string>
     <string name="pref_location_key">location</string>
     <string name="pref_units_key">units</string>
+    <string name="pref_button_key">button</string>
     <string name="pref_zip_key">pref_zip_key</string>
     <string name="pref_onboarded_key">pref_onboarded_key</string>
     <string name="settings">Settings</string>
@@ -12,7 +13,7 @@
     <string name="minTemp">Min</string>
     <string name="nullable">null</string>
     <string name="enableLocation">Enable Location</string>
-    <string name="appName">RealWeather</string>
+    <string name="appName">SimpleWeather</string>
     <string name="checkYourNetworkConnection">Please check your network connection</string>
     <string name="failedGettingLocation">Failed getting location</string>
     <string name="weatherIcon">Weather Icon</string>
@@ -22,7 +23,10 @@
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="weather_icon">Weather Icon</string>
     <string name="please_enter_your_zip">Please enter your ZIP or enable location</string>
-    <string name="welcome_to_realweather">Welcome to RealWeather!</string>
+    <string name="welcome_to_realweather">Welcome to SimpleWeather!</string>
     <string name="or">OR</string>
     <string name="enter_zip">Enter ZIP</string>
+    <string name="app_description">A simple weather app for Android.</string>
+    <string name="developer_contact">Developer Contact</string>
+    <string name="contact_group">Developer Contact</string>
 </resources>
